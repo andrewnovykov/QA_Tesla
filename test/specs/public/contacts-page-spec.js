@@ -20,7 +20,7 @@ describe("Public Pages | Contact", () => {
     );
     ContactsPage.$contactFormInputEmail.setValue(faker.internet.email());
     ContactsPage.$contactFormInputZipCode.setValue(
-      faker.address.zipCode("78585")
+      faker.address.zipCode("#####")
     );
     ContactsPage.$contactFormTopicSelector.click();
     ContactsPage.$contactFormTopicSelectorFirstOption.click();

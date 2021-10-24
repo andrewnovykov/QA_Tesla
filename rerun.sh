@@ -1,0 +1,1 @@
+node_modules/.bin/wdio run  ./wdio.conf.js --spec=/Users/papapin777/Documents/QA/Homework/Tesla/test/specs/public/contacts-page-spec.js  --mochaOpts.grep "User shoud be able to land on Contact page" ./wdio.conf.js --spec=/Users/papapin777/Documents/QA/Homework/Tesla/test/specs/public/home-page-spec.js  --mochaOpts.grep "User shoud be able to land on Home page"

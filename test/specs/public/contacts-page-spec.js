@@ -10,7 +10,7 @@ describe("Public Pages | Contact", () => {
     Page.open("contact");
   });
 
-  it("User shoud be able to submit Contact Form on Contact page", () => {
+  it.skip("User shoud be able to submit Contact Form on Contact page", () => {
     ContactsPage.$contactFormTitle.waitForDisplayed();
     Page.moveToElement(ContactsPage.$submitContactFormButton);
     ContactsPage.$contactFormInputFirstName.setValue(faker.name.firstName());

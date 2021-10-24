@@ -4,7 +4,8 @@
   "description": "test automation for tesla website ",
   "main": "index.js",
   "scripts": {
-    "test": "npx wdio run ./wdio.conf.js --spec"
+    "test": "npx wdio run ./wdio.conf.js --spec",
+    "rerun": "sh rerun.sh "
   },
   "repository": {
     "type": "git",

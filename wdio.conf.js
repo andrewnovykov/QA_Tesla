@@ -1,3 +1,18 @@
+const { exec } = require("child_process");
+const fs = require("fs");
+const path = require("path");
+const { v5: uuidv5 } = require("uuid");
+
+const failures = [];
+const successes = [];
+const rerunScriptPath =  "./rerun.sh";
+const rerunDataDir = "./results/rerun";
+
+const serviceWorkerId = uuidv5(
+  `${Date.now()}`,
+  "6ba7b810-9dad-11d1-80b4-00c04fd430c8"
+);
+
 exports.config = {
   //
   // ====================
@@ -225,8 +240,30 @@ exports.config = {
   /**
    * Function to be executed after a test (in Mocha/Jasmine).
    */
-  // afterTest: function(test, context, { error, result, duration, passed, retries }) {
-  // },
+  afterTest: function (
+    test,
+    context,
+    { error, result, duration, passed, retries }
+  ) {
+    let myTest = {}
+
+    const title = test.title;
+    const state = passed;
+    const specFile = test.file;
+
+    // console.log("1:!!!!->" + test.title)
+    // console.log("2:!!!!->" + passed);
+     console.log("3:!!!!->" + Object.keys(test));
+    // console.log("4:!!!!->" + test.file);
+
+    myTest.title = title;
+    myTest.state = state;
+    myTest.spec = specFile;
+
+    if (state === false) {
+      failures.push(myTest);
+    }
+  },
 
   /**
    * Hook that gets executed after the suite has ended
@@ -250,8 +287,24 @@ exports.config = {
    * @param {Array.<Object>} capabilities list of capabilities details
    * @param {Array.<String>} specs List of spec file paths that ran
    */
-  // after: function (result, capabilities, specs) {
-  // },
+  after: function (result, capabilities, specs) {
+
+    console.log("*** Failures ->", failures);
+
+    
+    
+    if (failures.length > 0) {
+      fs.writeFileSync(
+        `${rerunDataDir}/rerun-${serviceWorkerId}.json`,
+        JSON.stringify(failures)
+      );
+    } else {
+    }
+    
+
+
+
+  },
   /**
    * Gets executed right after terminating the webdriver session.
    * @param {Object} config wdio configuration object
@@ -268,8 +321,38 @@ exports.config = {
    * @param {Array.<Object>} capabilities list of capabilities details
    * @param {<Object>} results object containing test results
    */
-  // onComplete: function(exitCode, config, capabilities, results) {
-  // },
+  onComplete: function (exitCode, config, capabilities, results) {
+
+    const failureLocations = []
+    const rerunFiles = fs.readdirSync(rerunDataDir);
+    
+     console.log("*** rerunDataDir ->", rerunDataDir);
+     console.log("*** rerunFiles ->", rerunFiles);
+
+    rerunFiles.forEach((file) => {
+
+      const json = JSON.parse(fs.readFileSync(`${rerunDataDir}/${file}`));
+
+      json.forEach((failure) => {
+        failureLocations.push(failure);
+      });
+
+    });
+
+    console.log("failureLocations ->>>" + failureLocations);
+
+    let rerunCommand = `node_modules/.bin/wdio run `;
+
+    failureLocations.forEach((fail) => {
+      rerunCommand += ` ./wdio.conf.js --spec=${fail.spec}  --mochaOpts.grep "${fail.title}"`;
+    });
+
+    fs.writeFileSync(rerunScriptPath, rerunCommand);
+
+    
+    
+
+  },
   /**
    * Gets executed when a refresh happens.
    * @param {String} oldSessionId session ID of the old session

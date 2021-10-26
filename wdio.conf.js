@@ -341,10 +341,20 @@ exports.config = {
 
     console.log("failureLocations ->>>" + failureLocations);
 
-    let rerunCommand = `node_modules/.bin/wdio run `;
+    let rerunCommand = ``;
 
     failureLocations.forEach((fail) => {
-      rerunCommand += ` ./wdio.conf.js --spec=${fail.spec}  --mochaOpts.grep "${fail.title}"`;
+
+      console.log("!!!!***" + failureLocations.indexOf(fail));
+      console.log("!!!!*** ->>>" + failureLocations.length );
+      
+
+      if (failureLocations.indexOf(fail) + 1 === failureLocations.length ) {
+        rerunCommand += `node_modules/.bin/wdio run ./wdio.conf.js --spec=${fail.spec}  --mochaOpts.grep "${fail.title}"`;
+      } else {
+        rerunCommand += `node_modules/.bin/wdio run ./wdio.conf.js --spec=${fail.spec}  --mochaOpts.grep "${fail.title}" & `;
+      }
+      
     });
 
     fs.writeFileSync(rerunScriptPath, rerunCommand);

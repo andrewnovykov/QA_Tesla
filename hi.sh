@@ -1,1 +1,1 @@
-npx wdio run ./wdio.conf.js --spec=/Users/papapin777/Documents/QA/Homework/Tesla/test/specs/public/contacts-page-spec.js --mochaOpts.grep "User shoud be able to land on Contact page" + npx wdio run ./wdio.conf.js --spec=/Users/papapin777/Documents/QA/Homework/Tesla/test/specs/public/contacts-page-spec.js --mochaOpts.grep "User shoud be able to land on Contact page"
+npx wdio wdio.conf.js --mochaOpts.grep "(User shoud be able to land on Contact page | User shoud be able to land on Contact page )($|[^\d])"

@@ -5,7 +5,9 @@
   "main": "index.js",
   "scripts": {
     "test": "npx wdio run ./wdio.conf.js --spec",
-    "rerun": "sh rerun.sh "
+    "test:delRes": "rimraf ./results/rerun/*.json",
+    "rerun": "sh rerun.sh ",
+    "test:clean": "rimraf ./results/rerun/*.json ./rerun.sh"
   },
   "repository": {
     "type": "git",
@@ -25,7 +27,7 @@
     "@wdio/mocha-framework": "^7.13.2",
     "@wdio/spec-reporter": "^7.13.2",
     "@wdio/sync": "^7.3.0",
-    "chromedriver": "^93",
+    "chromedriver": "^94",
     "wdio-chromedriver-service": "^7.2.2"
   },
   "dependencies": {

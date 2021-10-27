@@ -1,7 +1,8 @@
-const { exec } = require("child_process");
+
 const fs = require("fs");
 const path = require("path");
 const { v5: uuidv5 } = require("uuid");
+var rimraf = require("rimraf");
 
 const failures = [];
 const successes = [];
@@ -74,7 +75,7 @@ exports.config = {
         w3c: false,
         args: [
           "window-size=1920,1080",
-          //'headless',
+          'headless',
           "no-sandbox",
           "disable-gpu",
         ],
@@ -207,6 +208,16 @@ exports.config = {
    */
   before: function (capabilities, specs) {
     //delete json
+   
+
+    rimraf("./results/rerun/*.json", (error) => {
+      if (error) throw new Error(error);
+    });
+
+    rimraf("./rerun.sh", (error) => {
+      if (error) throw new Error(error);
+    });
+
   },
   /**
    * Runs before a WebdriverIO command gets executed.
@@ -264,6 +275,9 @@ exports.config = {
     if (state === false) {
       failures.push(myTest);
     }
+
+    browser.closeWindow();
+  
   },
 
   /**
@@ -300,6 +314,7 @@ exports.config = {
         JSON.stringify(failures)
       );
     } else {
+      process.exit(0)
     }
     
 
@@ -312,8 +327,9 @@ exports.config = {
    * @param {Array.<Object>} capabilities list of capabilities details
    * @param {Array.<String>} specs List of spec file paths that ran
    */
-  // afterSession: function (config, capabilities, specs) {
-  // },
+  afterSession: function (config, capabilities, specs) {
+    
+  },
   /**
    * Gets executed after all workers got shut down and the process is about to exit. An error
    * thrown in the onComplete hook will result in the test run failing.
@@ -323,21 +339,18 @@ exports.config = {
    * @param {<Object>} results object containing test results
    */
   onComplete: function (exitCode, config, capabilities, results) {
-
-    const failureLocations = []
+    const failureLocations = [];
     const rerunFiles = fs.readdirSync(rerunDataDir);
-    
-     console.log("*** rerunDataDir ->", rerunDataDir);
-     console.log("*** rerunFiles ->", rerunFiles);
+
+    console.log("*** rerunDataDir ->", rerunDataDir);
+    console.log("*** rerunFiles ->", rerunFiles);
 
     rerunFiles.forEach((file) => {
-
       const json = JSON.parse(fs.readFileSync(`${rerunDataDir}/${file}`));
 
       json.forEach((failure) => {
         failureLocations.push(failure);
       });
-
     });
 
     console.log("failureLocations ->>>" + failureLocations);
@@ -345,24 +358,21 @@ exports.config = {
     let rerunCommand = ``;
 
     failureLocations.forEach((fail) => {
-
       console.log("!!!!***" + failureLocations.indexOf(fail));
-      console.log("!!!!*** ->>>" + failureLocations.length );
-      
+      console.log("!!!!*** ->>>" + failureLocations.length);
 
-      if (failureLocations.indexOf(fail) + 1 === failureLocations.length ) {
-        rerunCommand += `node_modules/.bin/wdio run ./wdio.conf.js --spec=${fail.spec}  --mochaOpts.grep "${fail.title}"`;
+      if (failureLocations.indexOf(fail) + 1 === failureLocations.length) {
+        rerunCommand += `node_modules/.bin/wdio run ./wdio.conf.js --spec=${fail.spec}  --mochaOpts.grep "${fail.title}" `;
       } else {
         rerunCommand += `node_modules/.bin/wdio run ./wdio.conf.js --spec=${fail.spec}  --mochaOpts.grep "${fail.title}" & `;
       }
-      
     });
 
     fs.writeFileSync(rerunScriptPath, rerunCommand);
 
-    
-    
+     
 
+    
   },
   /**
    * Gets executed when a refresh happens.

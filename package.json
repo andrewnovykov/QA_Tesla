@@ -6,7 +6,7 @@
   "scripts": {
     "test": "npx wdio run ./wdio.conf.js --spec",
     "test:delRes": "rimraf ./results/rerun/*.json",
-    "rerun": "sh rerun.sh ",
+    "rerun": "sh rerun.sh",
     "test:clean": "rimraf ./results/rerun/*.json ./rerun.sh"
   },
   "repository": {
@@ -32,7 +32,8 @@
   },
   "dependencies": {
     "chai": "^4.3.4",
-    "faker": "^5.5.3"
+    "faker": "^5.5.3",
+    "rimraf": "^3.0.2"
   },
   "bugs": {
     "url": "https://github.com/papapin/QA_Tesla/issues"

@@ -1,3 +1,4 @@
+console.log(10 + 1)
 export const verify = async (browser) => {
     browser
         .url('https://www.tesla.com/account')
